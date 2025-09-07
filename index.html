@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
-<title>Pelan Sampler v1.4.0</title>
+<title>Pelan Sampler v1.3.2</title>
 
 <!-- PWA Meta Tags -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,6 +11,13 @@
 <meta name="apple-mobile-web-app-title" content="Pelan Sampler">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1f1f1f">
+
+<!-- Icons for iOS -->
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiByeD0iNDAiIGZpbGw9IiMxZjFmMWYiLz4KPHN2ZyB4PSI0MCIgeT0iNDAiIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+CjxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iNCIgZmlsbD0iIzJlOWI2MCIvPgo8cmVjdCB4PSI0MCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjQiIGZpbGw9IiMyZTliNjAiLz4KPHJlY3QgeD0iNzAiIHk9IjEwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSI0IiBmaWxsPSIjMmU5YjYwIi8+CjxyZWN0IHg9IjEwIiB5PSI0MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iNCIgZmlsbD0iIzJlOWI2MCIvPgo8cmVjdCB4PSI0MCIgeT0iNDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjQiIGZpbGw9IiNlNjdlMjIiLz4KPHJlY3QgeD0iNzAiIHk9IjQwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSI0IiBmaWxsPSIjMmU5YjYwIi8+CjxyZWN0IHg9IjEwIiB5PSI3MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiByeD0iNCIgZmlsbD0iIzJlOWI2MCIvPgo8cmVjdCB4PSI0MCIgeT0iNzAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcng9IjQiIGZpbGw9IiMyZTliNjAiLz4KPHJlY3QgeD0iNzAiIHk9IjcwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSI0IiBmaWxsPSIjMmU5YjYwIi8+CjwvZz4KPC9zdmc+">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFmMWYxZiIvPgo8cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiByeD0iMiIgZmlsbD0iIzJlOWI2MCIvPgo8cmVjdCB4PSIxMiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iOCIgcng9IjIiIGZpbGw9IiMyZTliNjAiLz4KPHJlY3QgeD0iMjIiIHk9IjIiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIHJ4PSIyIiBmaWxsPSIjMmU5YjYwIi8+CjxyZWN0IHg9IjIiIHk9IjEyIiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiByeD0iMiIgZmlsbD0iIzJlOWI2MCIvPgo8cmVjdCB4PSIxMiIgeT0iMTIiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIHJ4PSIyIiBmaWxsPSIjZTY3ZTIyIi8+CjxyZWN0IHg9IjIyIiB5PSIxMiIgd2lkdGg9IjgiIGhlaWdodD0iOCIgcng9IjIiIGZpbGw9IiMyZTliNjAiLz4KPHJlY3QgeD0iMiIgeT0iMjIiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIHJ4PSIyIiBmaWxsPSIjMmU5YjYwIi8+CjxyZWN0IHg9IjEyIiB5PSIyMiIgd2lkdGg9IjgiIGhlaWdodD0iOCIgcng9IjIiIGZpbGw9IiMyZTliNjAiLz4KPHJlY3QgeD0iMjIiIHk9IjIyIiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiByeD0iMiIgZmlsbD0iIzJlOWI2MCIvPgo8L3N2Zz4K">
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlBlbGFuIFNhbXBsZXIiLAogICJzaG9ydF9uYW1lIjogIlBlbGFuIiwKICAiZGVzY3JpcHRpb24iOiAiQXVkaW8gU2FtcGxlciBmb3IgaU9TIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMxZjFmMWYiLAogICJ0aGVtZV9jb2xvciI6ICIjMWYxZjFmIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCM2FXUjBhRDBpTVRnd0lpQm9aV2xuYUhROUlqRTRNQ0lpSUhacFpYZENiM2c5SWpBZ01DQXhPREFnTVRnd0lpQm1hV3hzUFNKdWIyNWxJaUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lQZ29nUEhKbFkzUWdkMmxrZEdnOUlqRTRNQ0lpSUdobGFXZG9kRDBpTVRnd0lpQnllRDBpTkRBaUlHWnBiR3c5SWlNeE1tWXhNbVlpTHo0S0lEeHpkbWNnZUQwaU5EQWlJSGs5SWpRd0lpQjNhV1IwYUQwaU1UQXdJaUJvWldsbmFIUTlJakV3TUNJS0lIWnBaWGRDYjNnOUlqQWdNQ0F4TURBZ01UQXdJajRLSUNBZ1BISmxZM1FnZUQwaU1UQWlJSGs5SWpFd0lpQjNhV1IwYUQwaU1qQWlJR2hsYVdkb2REMGlNakFpSUhKNFBTSTBJaUJtYVd4c1BTSWpNbVU1WWpZd0lpOCtDaUFnSUR4eVpXTjBJSGc5SWpRd0lpQjVQU0l4TUNJS0lIZHBaSFJvUFNJeU1DSWdhR1ZwWjJoMFBTSXlNQ0lpSUhKNFBTSTBJaUJtYVd4c1BTSWpNbVU1WWpZd0lpOCtDaUFnSUR4eVpXTjBJSGc5SWpjd0lpQjVQU0l4TUNJS0lIZHBaSFJvUFNJeU1DSWdhR1ZwWjJoMFBTSXlNQ0lpSUhKNFBTSTBJaUJtYVd4c1BTSWpaVFkzWlRJeUlpOCtDaUFnSUR4eVpXTjBJSGc5SWpjd0lpQjVQU0kwTUNJS0lIZHBaSFJvUFNJeU1DSWdhR1ZwWjJoMFBTSXlNQ0lpSUhKNFBTSTBJaUJtYVd4c1BTSWpNbVU1WWpZd0lpOCtDaUFnSUR4eVpXTjBJSGc5SWpFd0lpQjVQU0kzTUNJS0lIZHBaSFJvUFNJeU1DSWdhR1ZwWjJoMFBTSXlNQ0lpSUhKNFBTSTBJaUJtYVd4c1BTSWpNbVU1WWpZd0lpOCtDaUFnSUR4eVpXTjBJSGc5SWpRd0lpQjVQU0kzTUNJS0lIZHBaSFJvUFNJeU1DSWdhR1ZwWjJoMFBTSXlNQ0lpSUhKNFBTSTBJaUJtYVd4c1BTSWpNbVU1WWpZd0lpOCtDaUFnSUR4eVpXTjBJSGc5SWpjd0lpQjVQU0kzTUNJS0lIZHBaSFJvUFNJeU1DSWdhR1ZwWjJoMFBTSXlNQ0lpSUhKNFBTSTBJaUJtYVd4c1BTSWpNbVU1WWpZd0lpOCtDand2Wno0S1BDOXpkbWMrIiwKICAgICAgInNpemVzIjogIjE4MHgxODAiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
 
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -34,8 +41,6 @@
   }
   input, select, textarea, button { font-size: 16px; }
   #versionLabel { text-align:center; margin-bottom:10px; font-size:13px; color:#aaa; font-weight:600; }
-
-  /* Sampler */
   .pad-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-bottom:14px; }
   .pad {
     aspect-ratio:1; min-height:100px; background:#4d4d4d; border:2px solid #3b3b3b; border-radius:12px;
@@ -66,7 +71,6 @@
   #muteGroup2Btn.active { background:#00d1ff; }
   #muteGroup3Btn { background:#f39c12; }
   #muteGroup3Btn.active { background:#f1c40f; color:#333; }
-  #toggleSequencerBtn { background:#2980b9; }
 
   .controls { background:#2b2b2b; padding:10px; border-radius:10px; margin-top:8px; }
   .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
@@ -90,159 +94,68 @@
     .pad { -webkit-tap-highlight-color: rgba(0,0,0,0); }
     button { -webkit-tap-highlight-color: rgba(0,0,0,0); }
   }
-
-  /* Sequencer */
-  .hidden { display:none !important; }
-  .sequencer { margin-top:12px; }
-  .transport { 
-    background:#2b2b2b; 
-    padding:12px; 
-    border-radius:10px; 
-    margin-bottom:16px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-  }
-  #playPauseBtn { background:#27ae60; }
-  #playPauseBtn.playing { background:#f39c12; }
-  #tapTempoBtn { background:#9b59b6; }
-  #backBtn { background:#34495e; }
-
-  .tempo-input {
-    width: 72px;
-    padding: 6px 8px;
-    border: 1px solid #555;
-    border-radius: 6px;
-    background: #333;
-    color: #fff;
-    text-align: center;
-  }
-  .swing-slider {
-    -webkit-appearance:none;
-    height:6px; border-radius:3px; background:#555; outline:none; width: 160px;
-  }
-  .swing-slider::-webkit-slider-thumb {
-    -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:#f1c40f; cursor:pointer;
-  }
-
-  .sequencer-grid {
-    background:#2b2b2b; padding:12px; border-radius:10px; overflow-x:auto;
-  }
-  .grid-header, .track-row {
-    display:grid; grid-template-columns: 80px repeat(8, 1fr); gap:4px; align-items:center;
-  }
-  .grid-header { margin-bottom:8px; }
-  .beat-number { text-align:center; font-size:12px; color:#aaa; font-weight:600; }
-  .track-label { font-size:12px; color:#ddd; text-align:center; font-weight:600; background:#3b3b3b; padding:8px 4px; border-radius:6px; min-height:40px; display:flex; align-items:center; justify-content:center; }
-  .step-button { aspect-ratio:1; min-height:40px; background:#4d4d4d; border:2px solid #3b3b3b; border-radius:8px; cursor:pointer; transition: all .08s ease; display:flex; align-items:center; justify-content:center; position:relative; }
-  .step-button.active { background:#2e9b60; border-color:#27ae60; }
-  .step-button.current-beat { border-color:#f1c40f; box-shadow:0 0 8px rgba(241,196,15,.3); }
-  .step-button.playing { background:#e67e22; border-color:#d35400; box-shadow:0 0 10px rgba(230,126,34,.4); }
-
-  @media (max-width: 600px) {
-    .grid-header, .track-row { grid-template-columns: 64px repeat(8, 1fr); }
-    .track-label { font-size:11px; padding:6px 3px; }
-    .step-button { min-height:36px; }
-  }
 </style>
 </head>
 <body>
   <div class="rec-indicator"></div>
 
-  <div id="versionLabel">Pelan Sampler v1.4.0</div>
+  <div id="versionLabel">Pelan Sampler v1.3.2</div>
 
-  <!-- Sampler View -->
-  <div id="samplerView">
-    <div class="pad-grid" id="padGrid"></div>
+  <div class="pad-grid" id="padGrid"></div>
 
-    <div>
-      <button id="recordBtn">Record</button>
-      <input type="file" id="fileInput" accept="audio/*" style="display:none;">
-      <button id="loadBtn">Load</button>
-      <button id="clearPad" class="clear-btn">Clear</button>
-      <button id="muteGroup1Btn">Mute 1</button>
-      <button id="muteGroup2Btn">Mute 2</button>
-      <button id="muteGroup3Btn">Mute 3</button>
-      <button id="toggleSequencerBtn">Sequencer</button>
-    </div>
-
-    <div class="controls">
-      <div class="row">
-        <div class="group">
-          <label>Master Vol</label>
-          <input type="range" id="masterVol" min="0" max="100" value="80">
-          <span id="masterVolVal">80%</span>
-        </div>
-        <div class="group">
-          <label>Pad Vol</label>
-          <input type="range" id="padVol" min="0" max="100" value="80">
-          <span id="padVolVal">80%</span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="group">
-          <label>Pitch</label>
-          <input type="range" id="padPitch" min="0.5" max="2" step="0.1" value="1">
-          <span id="padPitchVal">1.0x</span>
-        </div>
-        <div class="group">
-          <label>Time Stretch</label>
-          <input type="range" id="timeStretch" min="0.25" max="4" step="0.05" value="1">
-          <span id="timeStretchVal">1.0x</span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="group">
-          <label>Start</label>
-          <input type="range" id="padStart" min="0" max="100" value="0">
-          <span id="padStartVal">0%</span>
-        </div>
-        <div class="group">
-          <label>End</label>
-          <input type="range" id="padEnd" min="0" max="100" value="100">
-          <span id="padEndVal">100%</span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="group">
-          <label>Filter</label>
-          <input type="range" id="filter" min="0" max="100" value="50">
-          <span id="filterVal">OFF</span>
-        </div>
-      </div>
-    </div>
+  <div>
+    <button id="recordBtn">Record</button>
+    <input type="file" id="fileInput" accept="audio/*" style="display:none;">
+    <button id="loadBtn">Load</button>
+    <button id="clearPad" class="clear-btn">Clear</button>
+    <button id="muteGroup1Btn">Mute 1</button>
+    <button id="muteGroup2Btn">Mute 2</button>
+    <button id="muteGroup3Btn">Mute 3</button>
   </div>
 
-  <!-- Sequencer View -->
-  <div id="sequencerView" class="hidden">
-    <div class="transport">
-      <button id="playPauseBtn">Play</button>
-      <button id="tapTempoBtn">Tap Tempo</button>
-
-      <label>BPM:</label>
-      <input type="number" id="tempoInput" class="tempo-input" min="60" max="200" value="120">
-
-      <label>Swing:</label>
-      <input type="range" id="swingSlider" class="swing-slider" min="50" max="100" value="50">
-      <span id="swingValue">50%</span>
-
-      <button id="backBtn">Back to Sampler</button>
-    </div>
-
-    <div class="sequencer-grid">
-      <div class="grid-header">
-        <div></div>
-        <div class="beat-number">1</div>
-        <div class="beat-number">2</div>
-        <div class="beat-number">3</div>
-        <div class="beat-number">4</div>
-        <div class="beat-number">5</div>
-        <div class="beat-number">6</div>
-        <div class="beat-number">7</div>
-        <div class="beat-number">8</div>
+  <div class="controls">
+    <div class="row">
+      <div class="group">
+        <label>Master Vol</label>
+        <input type="range" id="masterVol" min="0" max="100" value="80">
+        <span id="masterVolVal">80%</span>
       </div>
-      <div id="sequencerTracks"></div>
+      <div class="group">
+        <label>Pad Vol</label>
+        <input type="range" id="padVol" min="0" max="100" value="80">
+        <span id="padVolVal">80%</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="group">
+        <label>Pitch</label>
+        <input type="range" id="padPitch" min="0.5" max="2" step="0.1" value="1">
+        <span id="padPitchVal">1.0x</span>
+      </div>
+      <div class="group">
+        <label>Time Stretch</label>
+        <input type="range" id="timeStretch" min="0.25" max="4" step="0.05" value="1">
+        <span id="timeStretchVal">1.0x</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="group">
+        <label>Start</label>
+        <input type="range" id="padStart" min="0" max="100" value="0">
+        <span id="padStartVal">0%</span>
+      </div>
+      <div class="group">
+        <label>End</label>
+        <input type="range" id="padEnd" min="0" max="100" value="100">
+        <span id="padEndVal">100%</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="group">
+        <label>Filter</label>
+        <input type="range" id="filter" min="0" max="100" value="50">
+        <span id="filterVal">OFF</span>
+      </div>
     </div>
   </div>
 
@@ -259,12 +172,12 @@
   },{passive:false,capture:true});
   ['gesturestart','gesturechange','gestureend'].forEach(evt=>document.addEventListener(evt,e=>e.preventDefault()));
   document.addEventListener('touchmove', function(e) {
-    if(e.target.closest('.controls') || e.target.closest('.transport')) return;
+    if(e.target.closest('.controls')) return;
     e.preventDefault();
   }, {passive: false});
 })();
 
-// Service Worker registration for PWA (kept minimal)
+// Service Worker registration for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     const swCode = `
@@ -315,20 +228,13 @@ class Sampler {
       start: document.getElementById('padStart'), startVal: document.getElementById('padStartVal'),
       end: document.getElementById('padEnd'), endVal: document.getElementById('padEndVal'),
       timeStretch: document.getElementById('timeStretch'), timeStretchVal: document.getElementById('timeStretchVal'),
-      filter: document.getElementById('filter'), filterVal: document.getElementById('filterVal'),
-      samplerView: document.getElementById('samplerView'),
-      sequencerView: document.getElementById('sequencerView'),
-      toSeq: document.getElementById('toggleSequencerBtn'),
-      backBtn: document.getElementById('backBtn'),
+      filter: document.getElementById('filter'), filterVal: document.getElementById('filterVal')
     };
 
     this.makePads();
     this.bind();
     this.unlockAudioContext();
     this.requestMicPermission();
-
-    // Expose globally for sequencer
-    window.sampler = this;
   }
 
   unlockAudioContext(){
@@ -370,12 +276,12 @@ class Sampler {
     this.ui.grid.addEventListener('touchstart', (e)=>{
       e.preventDefault();
       const d=e.target.closest('.pad'); if(!d) return; 
-      const id=+d.dataset.id; this.select(id); this.playNow(id);
+      const id=+d.dataset.id; this.select(id); this.play(id);
     }, {passive: false});
 
     this.ui.grid.addEventListener('click', (e)=>{
       const d=e.target.closest('.pad'); if(!d) return; 
-      const id=+d.dataset.id; this.select(id); this.playNow(id);
+      const id=+d.dataset.id; this.select(id); this.play(id);
     });
 
     this.ui.load.addEventListener('click', ()=>this.ui.file.click());
@@ -433,16 +339,6 @@ class Sampler {
       else if(f < 50) this.ui.filterVal.textContent='LP ' + Math.round((50-f)*2) + '%';
       else this.ui.filterVal.textContent='HP ' + Math.round((f-50)*2) + '%';
     });
-
-    // View toggle
-    this.ui.toSeq.addEventListener('click', ()=>{
-      this.ui.samplerView.classList.add('hidden');
-      this.ui.sequencerView.classList.remove('hidden');
-    });
-    this.ui.backBtn.addEventListener('click', ()=>{
-      this.ui.samplerView.classList.remove('hidden');
-      this.ui.sequencerView.classList.add('hidden');
-    });
   }
 
   select(id){
@@ -464,13 +360,17 @@ class Sampler {
     this.ui.muteGroup3.classList.toggle('active', p.muteGroup3);
   }
 
-  // Immediate play for manual pad tapping (keeps mute group behavior)
-  async playNow(id){
+  async play(id){
     const p=this.pads[id]; if(!p||!p.buf) return;
     try{
       if(this.ctx.state==='suspended') await this.ctx.resume();
 
-      // Enforce mute groups
+      if(p.currentSource){
+        try{ p.currentSource.stop(); }catch{}
+        p.currentSource.disconnect();
+        p.currentSource = null;
+      }
+
       if(p.muteGroup1){
         Object.values(this.pads).forEach(pad => {
           if(pad.muteGroup1 && pad.id !== id && pad.currentSource){
@@ -499,7 +399,31 @@ class Sampler {
         });
       }
 
-      const s=this._buildSourceForPad(p);
+      const s=this.ctx.createBufferSource(); 
+      s.buffer=p.buf; 
+      const stretchedRate = p.pitch / p.timeStretch;
+      s.playbackRate.value = stretchedRate;
+
+      let filterNode = null;
+      if(p.filter !== 50) {
+        filterNode = this.ctx.createBiquadFilter();
+        if(p.filter < 50) {
+          filterNode.type = 'lowpass';
+          filterNode.frequency.value = 20000 - (50 - p.filter) * 380;
+        } else {
+          filterNode.type = 'highpass';
+          filterNode.frequency.value = 20 + (p.filter - 50) * 380;
+        }
+        filterNode.Q.value = 1;
+      }
+
+      const gainNode = this.ctx.createGain();
+      gainNode.gain.value = p.vol;
+
+      if(filterNode) { s.connect(filterNode); filterNode.connect(gainNode); }
+      else { s.connect(gainNode); }
+      gainNode.connect(this.masterIn);
+
       const dur=p.buf.duration, st=p.start*dur, en=p.end*dur;
       const stretchedDuration = (en - st) * p.timeStretch;
       s.start(0, st, Math.max(0.01, stretchedDuration));
@@ -508,43 +432,6 @@ class Sampler {
 
       p.el.classList.add('active'); setTimeout(()=>p.el.classList.remove('active'), 120);
     }catch(err){ console.error('play failed', err); }
-  }
-
-  // Scheduled play (used by sequencer) - doesn't stop current sources
-  playAt(id, whenAbs){
-    const p=this.pads[id]; if(!p||!p.buf) return;
-    const s=this._buildSourceForPad(p);
-    const dur=p.buf.duration, st=p.start*dur, en=p.end*dur;
-    const stretchedDuration = (en - st) * p.timeStretch;
-    s.start(Math.max(0, whenAbs), st, Math.max(0.01, stretchedDuration));
-  }
-
-  _buildSourceForPad(p){
-    const s=this.ctx.createBufferSource(); 
-    s.buffer=p.buf; 
-    const stretchedRate = p.pitch / p.timeStretch;
-    s.playbackRate.value = stretchedRate;
-
-    let filterNode = null;
-    if(p.filter !== 50) {
-      filterNode = this.ctx.createBiquadFilter();
-      if(p.filter < 50) {
-        filterNode.type = 'lowpass';
-        filterNode.frequency.value = 20000 - (50 - p.filter) * 380;
-      } else {
-        filterNode.type = 'highpass';
-        filterNode.frequency.value = 20 + (p.filter - 50) * 380;
-      }
-      filterNode.Q.value = 1;
-    }
-
-    const gainNode = this.ctx.createGain();
-    gainNode.gain.value = p.vol;
-
-    if(filterNode) { s.connect(filterNode); filterNode.connect(gainNode); }
-    else { s.connect(gainNode); }
-    gainNode.connect(this.masterIn);
-    return s;
   }
 
   stopAllSounds(){
@@ -586,7 +473,6 @@ class Sampler {
   async toggleRec(){
     if(this.isRecording){ this.stopRec(); return; }
     if(this.sel && this.pads[this.sel].buf){
-      // Respect user's preference: do not record over a filled pad
       this.say("Clear pad before recording");
       return;
     }
@@ -627,206 +513,7 @@ class Sampler {
   say(m){ this.ui.status.textContent=m; }
 }
 
-/* Sequencer */
-class Sequencer {
-  constructor(sampler){
-    this.sampler = sampler;
-    this.ctx = sampler.ctx;
-
-    this.isPlaying = false;
-    this.currentStep = 0;            // 0..7
-    this.tempo = 120;                // BPM
-    this.swing = 50;                 // 50..100
-    this.lookahead = 25;             // ms
-    this.scheduleAheadTime = 0.12;   // seconds
-    this.nextStepTime = 0;
-
-    this.tapTimes = [];
-
-    // 9 tracks x 8 steps pattern
-    this.pattern = {};
-    for(let t=1;t<=9;t++) this.pattern[t] = new Array(8).fill(false);
-
-    this.ui = {
-      playPause: document.getElementById('playPauseBtn'),
-      tap: document.getElementById('tapTempoBtn'),
-      tempo: document.getElementById('tempoInput'),
-      swing: document.getElementById('swingSlider'),
-      swingVal: document.getElementById('swingValue'),
-      tracks: document.getElementById('sequencerTracks'),
-      status: document.getElementById('status')
-    };
-
-    this.createTracks();
-    this.bind();
-  }
-
-  createTracks(){
-    for(let track=1; track<=9; track++){
-      const row = document.createElement('div');
-      row.className = 'track-row';
-      const label = document.createElement('div');
-      label.className = 'track-label';
-      label.textContent = `Pad ${track}`;
-      row.appendChild(label);
-      for(let step=0; step<8; step++){
-        const btn = document.createElement('div');
-        btn.className = 'step-button';
-        btn.dataset.track = track;
-        btn.dataset.step = step;
-        row.appendChild(btn);
-      }
-      this.ui.tracks.appendChild(row);
-    }
-  }
-
-  bind(){
-    this.ui.playPause.addEventListener('click', ()=> this.toggle());
-    this.ui.tap.addEventListener('click', ()=> this.tapTempo());
-
-    this.ui.tempo.addEventListener('input', e=>{
-      const v = Math.max(60, Math.min(200, parseInt(e.target.value||120,10)));
-      this.tempo = v; this.ui.tempo.value = v;
-      this.say(`Tempo: ${v} BPM`);
-    });
-
-    this.ui.swing.addEventListener('input', e=>{
-      this.swing = parseInt(e.target.value,10);
-      this.ui.swingVal.textContent = `${this.swing}%`;
-    });
-
-    this.ui.tracks.addEventListener('click', (e)=>{
-      if(!e.target.classList.contains('step-button')) return;
-      const t = parseInt(e.target.dataset.track,10);
-      const s = parseInt(e.target.dataset.step,10);
-      this.pattern[t][s] = !this.pattern[t][s];
-      e.target.classList.toggle('active', this.pattern[t][s]);
-      if(this.pattern[t][s]) { // instant feedback
-        this.sampler.playAt(t, this.ctx.currentTime);
-      }
-    });
-  }
-
-  toggle(){
-    if(this.isPlaying) this.pause();
-    else this.play();
-  }
-
-  play(){
-    if(this.ctx.state === 'suspended') this.ctx.resume();
-    this.isPlaying = true;
-    this.ui.playPause.textContent = 'Pause';
-    this.ui.playPause.classList.add('playing');
-    this.nextStepTime = this.ctx.currentTime;
-    this.scheduler();
-    this.say('Playing');
-  }
-
-  pause(){
-    this.isPlaying = false;
-    this.ui.playPause.textContent = 'Play';
-    this.ui.playPause.classList.remove('playing');
-    this.say('Paused');
-  }
-
-  // 8-step grid uses 8th notes. Swing shifts odd steps (2,4,6,8)
-  getStepDuration() {
-    return 60.0 / this.tempo / 2; // 8th notes
-  }
-
-  // Swing offset fraction: from 0 (50%) to 0.5 (100%) of step duration
-  getSwingOffset(stepIndex) {
-    if (this.swing <= 50) return 0;
-    if ((stepIndex % 2) === 1) {
-      const factor = (this.swing - 50) / 50; // 0..1
-      return this.getStepDuration() * 0.5 * factor;
-    }
-    return 0;
-  }
-
-  scheduler(){
-    while (this.isPlaying && this.nextStepTime < this.ctx.currentTime + this.scheduleAheadTime) {
-      const step = this.currentStep;
-
-      const stepTime = this.nextStepTime + this.getSwingOffset(step);
-      this.scheduleStep(step, stepTime);
-
-      // prepare next base step time (without swing)
-      this.nextStepTime += this.getStepDuration();
-      this.currentStep = (this.currentStep + 1) % 8;
-    }
-
-    if(this.isPlaying) {
-      setTimeout(()=>this.scheduler(), this.lookahead);
-    }
-  }
-
-  scheduleStep(step, time){
-    // Visuals at the right time
-    const ms = Math.max(0, (time - this.ctx.currentTime) * 1000);
-    setTimeout(()=>{
-      if(!this.isPlaying) return;
-      this.updateVisuals(step);
-    }, ms);
-
-    // Trigger tracks marked ON at this step
-    for(let t=1; t<=9; t++){
-      if(this.pattern[t][step]) {
-        this.sampler.playAt(t, time);
-      }
-    }
-  }
-
-  updateVisuals(step){
-    // clear previous
-    document.querySelectorAll('.step-button').forEach(b=>{
-      b.classList.remove('current-beat','playing');
-    });
-    // current beat
-    document.querySelectorAll(`.step-button[data-step="${step}"]`).forEach(b=>{
-      b.classList.add('current-beat');
-      if (b.classList.contains('active')) b.classList.add('playing');
-    });
-  }
-
-  tapTempo(){
-    const now = Date.now();
-    this.tapTimes.push(now);
-    if(this.tapTimes.length > 6) this.tapTimes.shift();
-
-    if(this.tapTimes.length >= 2) {
-      const intervals = [];
-      for(let i=1;i<this.tapTimes.length;i++){
-        intervals.push(this.tapTimes[i]-this.tapTimes[i-1]);
-      }
-      const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
-      const bpm = Math.round(60000/avg);
-      if(bpm>=60 && bpm<=200){
-        this.tempo = bpm;
-        this.ui.tempo.value = bpm;
-        this.say(`Tempo: ${bpm} BPM`);
-      }
-    }
-
-    // clear taps after 2s inactivity
-    clearTimeout(this._tapClearTO);
-    this._tapClearTO = setTimeout(()=>{
-      if(this.tapTimes.length) this.tapTimes = [];
-    }, 2000);
-  }
-
-  say(msg){ this.ui.status.textContent = msg; }
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  const sampler = new Sampler();
-  const seq = new Sequencer(sampler);
-
-  // Back button wiring already in sampler.bind()
-
-  // Optional: expose sequencer for debugging
-  window.sequencer = seq;
-});
+document.addEventListener('DOMContentLoaded', ()=> new Sampler());
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
-<title>Pelan Sampler v1.4.0</title>
+<title>Pelan Sampler + Sequencer v1.4.0</title>
 
 <!-- PWA Meta Tags -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,6 +11,9 @@
 <meta name="apple-mobile-web-app-title" content="Pelan Sampler">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1f1f1f">
+
+<!-- Force portrait orientation -->
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUGVsYW4gU2FtcGxlciIsInNob3J0X25hbWUiOiJQZWxhbiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCJ9">
 
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -34,6 +37,14 @@
   }
   input, select, textarea, button { font-size: 16px; }
   #versionLabel { text-align:center; margin-bottom:10px; font-size:13px; color:#aaa; font-weight:600; }
+
+  /* Orientation overlay (fallback for iOS) */
+  #orientationOverlay {
+    position: fixed; inset: 0; background: #111; color: #fff;
+    display: none; align-items: center; justify-content: center; text-align: center;
+    padding: 24px; z-index: 9999; font-weight: 700; font-size: 18px;
+  }
+  #orientationOverlay.visible { display: flex; }
 
   /* Sampler */
   .pad-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-bottom:14px; }
@@ -127,10 +138,28 @@
   }
 
   .sequencer-grid {
-    background:#2b2b2b; padding:12px; border-radius:10px; overflow-x:auto;
+    background:#2b2b2b;
+    padding:8px;
+    border-radius:10px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling: touch;
+    /* Safe areas so last column isn't clipped by the screen edge */
+    padding-left: calc(8px + env(safe-area-inset-left));
+    padding-right: calc(8px + env(safe-area-inset-right));
   }
+
+  /* Wrap that enforces proper grid scaling */
+  .grid-wrap {
+    width: 100%;
+    min-width: 100%;
+  }
+
   .grid-header, .track-row {
-    display:grid; grid-template-columns: 80px repeat(8, 1fr); gap:4px; align-items:center;
+    display:grid;
+    grid-template-columns: 60px repeat(8, 1fr);
+    gap:3px;
+    align-items:center;
+    width: 100%;
   }
   .grid-header { margin-bottom:8px; }
   .beat-number { text-align:center; font-size:12px; color:#aaa; font-weight:600; }
@@ -141,108 +170,115 @@
   .step-button.playing { background:#e67e22; border-color:#d35400; box-shadow:0 0 10px rgba(230,126,34,.4); }
 
   @media (max-width: 600px) {
-    .grid-header, .track-row { grid-template-columns: 64px repeat(8, 1fr); }
-    .track-label { font-size:11px; padding:6px 3px; }
-    .step-button { min-height:36px; }
+    .grid-header, .track-row { 
+      grid-template-columns: 40px repeat(8, 1fr); 
+      gap: 2px;
+    }
+    .track-label { font-size:10px; padding:4px 2px; min-height:32px; }
+    .step-button { min-height:32px; }
+    .sequencer-grid { padding: 6px; }
   }
 </style>
 </head>
 <body>
   <div class="rec-indicator"></div>
+  <div id="orientationOverlay">Please rotate your device to portrait</div>
 
-  <div id="versionLabel">Pelan Sampler v1.4.0</div>
+  <div id="versionLabel">Pelan Sampler + Sequencer v1.4.0</div>
 
   <!-- Sampler View -->
   <div id="samplerView">
     <div class="pad-grid" id="padGrid"></div>
 
     <div>
-      <button id="recordBtn">Record</button>
-      <input type="file" id="fileInput" accept="audio/*" style="display:none;">
-      <button id="loadBtn">Load</button>
-      <button id="clearPad" class="clear-btn">Clear</button>
-      <button id="muteGroup1Btn">Mute 1</button>
-      <button id="muteGroup2Btn">Mute 2</button>
-      <button id="muteGroup3Btn">Mute 3</button>
-      <button id="toggleSequencerBtn">Sequencer</button>
+    <button id="recordBtn">Record</button>
+    <input type="file" id="fileInput" accept="audio/*" style="display:none;">
+    <button id="loadBtn">Load</button>
+    <button id="clearPad" class="clear-btn">Clear</button>
+    <button id="muteGroup1Btn">Mute 1</button>
+    <button id="muteGroup2Btn">Mute 2</button>
+    <button id="muteGroup3Btn">Mute 3</button>
+    <button id="toggleSequencerBtn">Sequencer</button>
     </div>
 
     <div class="controls">
-      <div class="row">
-        <div class="group">
-          <label>Master Vol</label>
-          <input type="range" id="masterVol" min="0" max="100" value="80">
-          <span id="masterVolVal">80%</span>
-        </div>
-        <div class="group">
-          <label>Pad Vol</label>
-          <input type="range" id="padVol" min="0" max="100" value="80">
-          <span id="padVolVal">80%</span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="group">
-          <label>Pitch</label>
-          <input type="range" id="padPitch" min="0.5" max="2" step="0.1" value="1">
-          <span id="padPitchVal">1.0x</span>
-        </div>
-        <div class="group">
-          <label>Time Stretch</label>
-          <input type="range" id="timeStretch" min="0.25" max="4" step="0.05" value="1">
-          <span id="timeStretchVal">1.0x</span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="group">
-          <label>Start</label>
-          <input type="range" id="padStart" min="0" max="100" value="0">
-          <span id="padStartVal">0%</span>
-        </div>
-        <div class="group">
-          <label>End</label>
-          <input type="range" id="padEnd" min="0" max="100" value="100">
-          <span id="padEndVal">100%</span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="group">
-          <label>Filter</label>
-          <input type="range" id="filter" min="0" max="100" value="50">
-          <span id="filterVal">OFF</span>
-        </div>
-      </div>
+    <div class="row">
+    <div class="group">
+    <label>Master Vol</label>
+    <input type="range" id="masterVol" min="0" max="100" value="80">
+    <span id="masterVolVal">80%</span>
+    </div>
+    <div class="group">
+    <label>Pad Vol</label>
+    <input type="range" id="padVol" min="0" max="100" value="80">
+    <span id="padVolVal">80%</span>
+    </div>
+    </div>
+    <div class="row">
+    <div class="group">
+    <label>Pitch</label>
+    <input type="range" id="padPitch" min="0.5" max="2" step="0.1" value="1">
+    <span id="padPitchVal">1.0x</span>
+    </div>
+    <div class="group">
+    <label>Time Stretch</label>
+    <input type="range" id="timeStretch" min="0.25" max="4" step="0.05" value="1">
+    <span id="timeStretchVal">1.0x</span>
+    </div>
+    </div>
+    <div class="row">
+    <div class="group">
+    <label>Start</label>
+    <input type="range" id="padStart" min="0" max="100" value="0">
+    <span id="padStartVal">0%</span>
+    </div>
+    <div class="group">
+    <label>End</label>
+    <input type="range" id="padEnd" min="0" max="100" value="100">
+    <span id="padEndVal">100%</span>
+    </div>
+    </div>
+    <div class="row">
+    <div class="group">
+    <label>Filter</label>
+    <input type="range" id="filter" min="0" max="100" value="50">
+    <span id="filterVal">OFF</span>
+    </div>
+    </div>
     </div>
   </div>
 
   <!-- Sequencer View -->
   <div id="sequencerView" class="hidden">
     <div class="transport">
-      <button id="playPauseBtn">Play</button>
-      <button id="tapTempoBtn">Tap Tempo</button>
+    <button id="playPauseBtn">Play</button>
+    <button id="tapTempoBtn">Tap Tempo</button>
 
-      <label>BPM:</label>
-      <input type="number" id="tempoInput" class="tempo-input" min="60" max="200" value="120">
+    <label>BPM:</label>
+    <input type="number" id="tempoInput" class="tempo-input" min="60" max="200" value="120">
 
-      <label>Swing:</label>
-      <input type="range" id="swingSlider" class="swing-slider" min="50" max="100" value="50">
-      <span id="swingValue">50%</span>
+    <label>Swing:</label>
+    <input type="range" id="swingSlider" class="swing-slider" min="50" max="100" value="50">
+    <span id="swingValue">50%</span>
 
-      <button id="backBtn">Back to Sampler</button>
+    <button id="backBtn">Back to Sampler</button>
     </div>
 
     <div class="sequencer-grid">
-      <div class="grid-header">
-        <div></div>
-        <div class="beat-number">1</div>
-        <div class="beat-number">2</div>
-        <div class="beat-number">3</div>
-        <div class="beat-number">4</div>
-        <div class="beat-number">5</div>
-        <div class="beat-number">6</div>
-        <div class="beat-number">7</div>
-        <div class="beat-number">8</div>
-      </div>
-      <div id="sequencerTracks"></div>
+    <div class="grid-wrap">
+    <div class="grid-header">
+    <div></div>
+    <div class="beat-number">1</div>
+    <div class="beat-number">2</div>
+    <div class="beat-number">3</div>
+    <div class="beat-number">4</div>
+    <div class="beat-number">5</div>
+    <div class="beat-number">6</div>
+    <div class="beat-number">7</div>
+    <div class="beat-number">8</div>
+    </div>
+    <div id="sequencerTracks"></div>
+    </div>
     </div>
   </div>
 
@@ -264,16 +300,50 @@
   }, {passive: false});
 })();
 
+// Global orientation lock
+(async function lockOrientationGlobally(){
+  const overlay = document.getElementById('orientationOverlay');
+
+  function updateOverlay() {
+    const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+    // If we cannot programmatically lock, show overlay in landscape
+    const canLock = !!(screen.orientation && screen.orientation.lock);
+    overlay.classList.toggle('visible', isLandscape && !canLock);
+  }
+
+  async function tryLockPortrait() {
+    try {
+    if (screen.orientation && screen.orientation.lock) {
+    await screen.orientation.lock('portrait');
+    }
+    } catch (e) {
+    // Ignore; will use overlay fallback
+    }
+  }
+
+  updateOverlay();
+  await tryLockPortrait();
+
+  window.addEventListener('orientationchange', async () => {
+    updateOverlay();
+    await tryLockPortrait();
+  });
+
+  document.addEventListener('visibilitychange', async () => {
+    if (!document.hidden) await tryLockPortrait();
+  });
+})();
+
 // Service Worker registration for PWA (kept minimal)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     const swCode = `
     const CACHE_NAME = 'pelan-sampler-v1';
     self.addEventListener('install', event => {
-      event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['/'])));
+    event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['/'])));
     });
     self.addEventListener('fetch', event => {
-      event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
+    event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
     });
     `;
     const blob = new Blob([swCode], {type: 'application/javascript'});
@@ -285,8 +355,8 @@ if ('serviceWorker' in navigator) {
 class Sampler {
   constructor(){
     this.ctx = new (window.AudioContext||window.webkitAudioContext)({
-      latencyHint:'interactive',
-      sampleRate: 44100
+    latencyHint:'interactive',
+    sampleRate: 44100
     });
 
     this.masterIn = this.ctx.createGain();
@@ -300,26 +370,26 @@ class Sampler {
     this.recorder=null; this.chunks=[]; this.isRecording=false;
 
     this.ui = {
-      grid: document.getElementById('padGrid'),
-      file: document.getElementById('fileInput'),
-      load: document.getElementById('loadBtn'),
-      clear: document.getElementById('clearPad'),
-      rec: document.getElementById('recordBtn'),
-      status: document.getElementById('status'),
-      muteGroup1: document.getElementById('muteGroup1Btn'),
-      muteGroup2: document.getElementById('muteGroup2Btn'),
-      muteGroup3: document.getElementById('muteGroup3Btn'),
-      mVol: document.getElementById('masterVol'), mVolVal: document.getElementById('masterVolVal'),
-      vol: document.getElementById('padVol'), volVal: document.getElementById('padVolVal'),
-      pitch: document.getElementById('padPitch'), pitchVal: document.getElementById('padPitchVal'),
-      start: document.getElementById('padStart'), startVal: document.getElementById('padStartVal'),
-      end: document.getElementById('padEnd'), endVal: document.getElementById('padEndVal'),
-      timeStretch: document.getElementById('timeStretch'), timeStretchVal: document.getElementById('timeStretchVal'),
-      filter: document.getElementById('filter'), filterVal: document.getElementById('filterVal'),
-      samplerView: document.getElementById('samplerView'),
-      sequencerView: document.getElementById('sequencerView'),
-      toSeq: document.getElementById('toggleSequencerBtn'),
-      backBtn: document.getElementById('backBtn'),
+    grid: document.getElementById('padGrid'),
+    file: document.getElementById('fileInput'),
+    load: document.getElementById('loadBtn'),
+    clear: document.getElementById('clearPad'),
+    rec: document.getElementById('recordBtn'),
+    status: document.getElementById('status'),
+    muteGroup1: document.getElementById('muteGroup1Btn'),
+    muteGroup2: document.getElementById('muteGroup2Btn'),
+    muteGroup3: document.getElementById('muteGroup3Btn'),
+    mVol: document.getElementById('masterVol'), mVolVal: document.getElementById('masterVolVal'),
+    vol: document.getElementById('padVol'), volVal: document.getElementById('padVolVal'),
+    pitch: document.getElementById('padPitch'), pitchVal: document.getElementById('padPitchVal'),
+    start: document.getElementById('padStart'), startVal: document.getElementById('padStartVal'),
+    end: document.getElementById('padEnd'), endVal: document.getElementById('padEndVal'),
+    timeStretch: document.getElementById('timeStretch'), timeStretchVal: document.getElementById('timeStretchVal'),
+    filter: document.getElementById('filter'), filterVal: document.getElementById('filterVal'),
+    samplerView: document.getElementById('samplerView'),
+    sequencerView: document.getElementById('sequencerView'),
+    toSeq: document.getElementById('toggleSequencerBtn'),
+    backBtn: document.getElementById('backBtn'),
     };
 
     this.makePads();
@@ -333,12 +403,12 @@ class Sampler {
 
   unlockAudioContext(){
     const unlock = () => {
-      if(this.ctx.state === 'suspended') {
-        this.ctx.resume().then(() => {
-          document.removeEventListener('touchstart', unlock);
-          document.removeEventListener('click', unlock);
-        });
-      }
+    if(this.ctx.state === 'suspended') {
+    this.ctx.resume().then(() => {
+    document.removeEventListener('touchstart', unlock);
+    document.removeEventListener('click', unlock);
+    });
+    }
     };
     document.addEventListener('touchstart', unlock);
     document.addEventListener('click', unlock);
@@ -346,36 +416,36 @@ class Sampler {
 
   async requestMicPermission(){
     try{
-      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-      stream.getTracks().forEach(t=>t.stop());
-      this.say('Mic ready');
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    stream.getTracks().forEach(t=>t.stop());
+    this.say('Mic ready');
     }catch(err){
-      console.warn('Mic permission not granted yet.');
+    console.warn('Mic permission not granted yet.');
     }
   }
 
   makePads(){
     for(let i=1;i<=this.count;i++){
-      const d=document.createElement('div'); d.className='pad'; d.dataset.id=i;
-      d.innerHTML=`<div class="pad-number">${i}</div><div class="pad-name">Pad ${i}</div>`;
-      this.ui.grid.appendChild(d);
-      this.pads[i]={ id:i, name:`Pad ${i}`, buf:null, vol:.85, pitch:1, start:0, end:1,
-        timeStretch: 1, filter: 50,
-        muteGroup1: false, muteGroup2: false, muteGroup3: false, currentSource: null,
-        el:d };
+    const d=document.createElement('div'); d.className='pad'; d.dataset.id=i;
+    d.innerHTML=`<div class="pad-number">${i}</div><div class="pad-name">Pad ${i}</div>`;
+    this.ui.grid.appendChild(d);
+    this.pads[i]={ id:i, name:`Pad ${i}`, buf:null, vol:.85, pitch:1, start:0, end:1,
+    timeStretch: 1, filter: 50,
+    muteGroup1: false, muteGroup2: false, muteGroup3: false, currentSource: null,
+    el:d };
     }
   }
 
   bind(){
     this.ui.grid.addEventListener('touchstart', (e)=>{
-      e.preventDefault();
-      const d=e.target.closest('.pad'); if(!d) return; 
-      const id=+d.dataset.id; this.select(id); this.playNow(id);
+    e.preventDefault();
+    const d=e.target.closest('.pad'); if(!d) return; 
+    const id=+d.dataset.id; this.select(id); this.playNow(id);
     }, {passive: false});
 
     this.ui.grid.addEventListener('click', (e)=>{
-      const d=e.target.closest('.pad'); if(!d) return; 
-      const id=+d.dataset.id; this.select(id); this.playNow(id);
+    const d=e.target.closest('.pad'); if(!d) return; 
+    const id=+d.dataset.id; this.select(id); this.playNow(id);
     });
 
     this.ui.load.addEventListener('click', ()=>this.ui.file.click());
@@ -383,30 +453,30 @@ class Sampler {
     this.ui.clear.addEventListener('click', ()=>this.clear());
 
     this.ui.muteGroup1.addEventListener('click', ()=>{
-      if(!this.sel) return;
-      const pad = this.pads[this.sel];
-      pad.muteGroup1 = !pad.muteGroup1;
-      pad.el.classList.toggle('muted1', pad.muteGroup1);
-      this.ui.muteGroup1.classList.toggle('active', pad.muteGroup1);
-      this.say(`Pad ${this.sel} mute group 1 ${pad.muteGroup1 ? 'ON' : 'OFF'}`);
+    if(!this.sel) return;
+    const pad = this.pads[this.sel];
+    pad.muteGroup1 = !pad.muteGroup1;
+    pad.el.classList.toggle('muted1', pad.muteGroup1);
+    this.ui.muteGroup1.classList.toggle('active', pad.muteGroup1);
+    this.say(`Pad ${this.sel} mute group 1 ${pad.muteGroup1 ? 'ON' : 'OFF'}`);
     });
 
     this.ui.muteGroup2.addEventListener('click', ()=>{
-      if(!this.sel) return;
-      const pad = this.pads[this.sel];
-      pad.muteGroup2 = !pad.muteGroup2;
-      pad.el.classList.toggle('muted2', pad.muteGroup2);
-      this.ui.muteGroup2.classList.toggle('active', pad.muteGroup2);
-      this.say(`Pad ${this.sel} mute group 2 ${pad.muteGroup2 ? 'ON' : 'OFF'}`);
+    if(!this.sel) return;
+    const pad = this.pads[this.sel];
+    pad.muteGroup2 = !pad.muteGroup2;
+    pad.el.classList.toggle('muted2', pad.muteGroup2);
+    this.ui.muteGroup2.classList.toggle('active', pad.muteGroup2);
+    this.say(`Pad ${this.sel} mute group 2 ${pad.muteGroup2 ? 'ON' : 'OFF'}`);
     });
 
     this.ui.muteGroup3.addEventListener('click', ()=>{
-      if(!this.sel) return;
-      const pad = this.pads[this.sel];
-      pad.muteGroup3 = !pad.muteGroup3;
-      pad.el.classList.toggle('muted3', pad.muteGroup3);
-      this.ui.muteGroup3.classList.toggle('active', pad.muteGroup3);
-      this.say(`Pad ${this.sel} mute group 3 ${pad.muteGroup3 ? 'ON' : 'OFF'}`);
+    if(!this.sel) return;
+    const pad = this.pads[this.sel];
+    pad.muteGroup3 = !pad.muteGroup3;
+    pad.el.classList.toggle('muted3', pad.muteGroup3);
+    this.ui.muteGroup3.classList.toggle('active', pad.muteGroup3);
+    this.say(`Pad ${this.sel} mute group 3 ${pad.muteGroup3 ? 'ON' : 'OFF'}`);
     });
 
     this.ui.rec.addEventListener('click', ()=>this.toggleRec());
@@ -419,29 +489,29 @@ class Sampler {
     this.ui.end.addEventListener('input', e=>{ if(!this.sel) return; const en=e.target.value/100; this.pads[this.sel].end=en; this.ui.endVal.textContent=e.target.value+'%'; if(en<this.pads[this.sel].start){ this.pads[this.sel].start=en; this.ui.start.value=Math.round(en*100); this.ui.startVal.textContent=Math.round(en*100)+'%'; } });
 
     this.ui.timeStretch.addEventListener('input', e=>{ 
-      if(!this.sel) return; 
-      const ts=parseFloat(e.target.value); 
-      this.pads[this.sel].timeStretch=ts; 
-      this.ui.timeStretchVal.textContent=ts.toFixed(2)+'x'; 
+    if(!this.sel) return; 
+    const ts=parseFloat(e.target.value); 
+    this.pads[this.sel].timeStretch=ts; 
+    this.ui.timeStretchVal.textContent=ts.toFixed(2)+'x'; 
     });
     
     this.ui.filter.addEventListener('input', e=>{ 
-      if(!this.sel) return; 
-      const f=parseInt(e.target.value); 
-      this.pads[this.sel].filter=f; 
-      if(f === 50) this.ui.filterVal.textContent='OFF';
-      else if(f < 50) this.ui.filterVal.textContent='LP ' + Math.round((50-f)*2) + '%';
-      else this.ui.filterVal.textContent='HP ' + Math.round((f-50)*2) + '%';
+    if(!this.sel) return; 
+    const f=parseInt(e.target.value); 
+    this.pads[this.sel].filter=f; 
+    if(f === 50) this.ui.filterVal.textContent='OFF';
+    else if(f < 50) this.ui.filterVal.textContent='LP ' + Math.round((50-f)*2) + '%';
+    else this.ui.filterVal.textContent='HP ' + Math.round((f-50)*2) + '%';
     });
 
     // View toggle
     this.ui.toSeq.addEventListener('click', ()=>{
-      this.ui.samplerView.classList.add('hidden');
-      this.ui.sequencerView.classList.remove('hidden');
+    this.ui.samplerView.classList.add('hidden');
+    this.ui.sequencerView.classList.remove('hidden');
     });
     this.ui.backBtn.addEventListener('click', ()=>{
-      this.ui.samplerView.classList.remove('hidden');
-      this.ui.sequencerView.classList.add('hidden');
+    this.ui.samplerView.classList.remove('hidden');
+    this.ui.sequencerView.classList.add('hidden');
     });
   }
 
@@ -468,45 +538,45 @@ class Sampler {
   async playNow(id){
     const p=this.pads[id]; if(!p||!p.buf) return;
     try{
-      if(this.ctx.state==='suspended') await this.ctx.resume();
+    if(this.ctx.state==='suspended') await this.ctx.resume();
 
-      // Enforce mute groups
-      if(p.muteGroup1){
-        Object.values(this.pads).forEach(pad => {
-          if(pad.muteGroup1 && pad.id !== id && pad.currentSource){
-            try{ pad.currentSource.stop(); }catch{}
-            pad.currentSource.disconnect();
-            pad.currentSource = null;
-          }
-        });
-      }
-      if(p.muteGroup2){
-        Object.values(this.pads).forEach(pad => {
-          if(pad.muteGroup2 && pad.id !== id && pad.currentSource){
-            try{ pad.currentSource.stop(); }catch{}
-            pad.currentSource.disconnect();
-            pad.currentSource = null;
-          }
-        });
-      }
-      if(p.muteGroup3){
-        Object.values(this.pads).forEach(pad => {
-          if(pad.muteGroup3 && pad.id !== id && pad.currentSource){
-            try{ pad.currentSource.stop(); }catch{}
-            pad.currentSource.disconnect();
-            pad.currentSource = null;
-          }
-        });
-      }
+    // Enforce mute groups
+    if(p.muteGroup1){
+    Object.values(this.pads).forEach(pad => {
+    if(pad.muteGroup1 && pad.id !== id && pad.currentSource){
+    try{ pad.currentSource.stop(); }catch{}
+    pad.currentSource.disconnect();
+    pad.currentSource = null;
+    }
+    });
+    }
+    if(p.muteGroup2){
+    Object.values(this.pads).forEach(pad => {
+    if(pad.muteGroup2 && pad.id !== id && pad.currentSource){
+    try{ pad.currentSource.stop(); }catch{}
+    pad.currentSource.disconnect();
+    pad.currentSource = null;
+    }
+    });
+    }
+    if(p.muteGroup3){
+    Object.values(this.pads).forEach(pad => {
+    if(pad.muteGroup3 && pad.id !== id && pad.currentSource){
+    try{ pad.currentSource.stop(); }catch{}
+    pad.currentSource.disconnect();
+    pad.currentSource = null;
+    }
+    });
+    }
 
-      const s=this._buildSourceForPad(p);
-      const dur=p.buf.duration, st=p.start*dur, en=p.end*dur;
-      const stretchedDuration = (en - st) * p.timeStretch;
-      s.start(0, st, Math.max(0.01, stretchedDuration));
-      p.currentSource = s;
-      s.onended = () => { if(p.currentSource === s) p.currentSource = null; };
+    const s=this._buildSourceForPad(p);
+    const dur=p.buf.duration, st=p.start*dur, en=p.end*dur;
+    const stretchedDuration = (en - st) * p.timeStretch;
+    s.start(0, st, Math.max(0.01, stretchedDuration));
+    p.currentSource = s;
+    s.onended = () => { if(p.currentSource === s) p.currentSource = null; };
 
-      p.el.classList.add('active'); setTimeout(()=>p.el.classList.remove('active'), 120);
+    p.el.classList.add('active'); setTimeout(()=>p.el.classList.remove('active'), 120);
     }catch(err){ console.error('play failed', err); }
   }
 
@@ -527,15 +597,15 @@ class Sampler {
 
     let filterNode = null;
     if(p.filter !== 50) {
-      filterNode = this.ctx.createBiquadFilter();
-      if(p.filter < 50) {
-        filterNode.type = 'lowpass';
-        filterNode.frequency.value = 20000 - (50 - p.filter) * 380;
-      } else {
-        filterNode.type = 'highpass';
-        filterNode.frequency.value = 20 + (p.filter - 50) * 380;
-      }
-      filterNode.Q.value = 1;
+    filterNode = this.ctx.createBiquadFilter();
+    if(p.filter < 50) {
+    filterNode.type = 'lowpass';
+    filterNode.frequency.value = 20000 - (50 - p.filter) * 380;
+    } else {
+    filterNode.type = 'highpass';
+    filterNode.frequency.value = 20 + (p.filter - 50) * 380;
+    }
+    filterNode.Q.value = 1;
     }
 
     const gainNode = this.ctx.createGain();
@@ -549,24 +619,24 @@ class Sampler {
 
   stopAllSounds(){
     Object.values(this.pads).forEach(pad => {
-      if(pad.currentSource){
-        try{ pad.currentSource.stop(); }catch{}
-        pad.currentSource.disconnect();
-        pad.currentSource = null;
-      }
+    if(pad.currentSource){
+    try{ pad.currentSource.stop(); }catch{}
+    pad.currentSource.disconnect();
+    pad.currentSource = null;
+    }
     });
   }
 
   async loadFile(e){
     const f=e.target.files[0]; if(!f||!this.sel) { e.target.value=''; return; }
     try{ 
-      const ab=await f.arrayBuffer(); 
-      const buf=await this.ctx.decodeAudioData(ab); 
-      const p=this.pads[this.sel]; 
-      p.buf=buf; p.name=f.name; 
-      p.el.classList.add('has-sample'); 
-      p.el.querySelector('.pad-name').textContent=p.name; 
-      this.say('Loaded '+f.name+' → Pad '+this.sel); 
+    const ab=await f.arrayBuffer(); 
+    const buf=await this.ctx.decodeAudioData(ab); 
+    const p=this.pads[this.sel]; 
+    p.buf=buf; p.name=f.name; 
+    p.el.classList.add('has-sample'); 
+    p.el.querySelector('.pad-name').textContent=p.name; 
+    this.say('Loaded '+f.name+' → Pad '+this.sel); 
     }
     catch(err){ console.error(err); this.say('Load failed'); }
     e.target.value='';
@@ -586,39 +656,39 @@ class Sampler {
   async toggleRec(){
     if(this.isRecording){ this.stopRec(); return; }
     if(this.sel && this.pads[this.sel].buf){
-      // Respect user's preference: do not record over a filled pad
-      this.say("Clear pad before recording");
-      return;
+    // Respect user's preference: do not record over a filled pad
+    this.say("Clear pad before recording");
+    return;
     }
     const target = this.sel || this.findEmpty();
     if(!target){ this.say("No empty pads"); return; }
 
     try{
-      const stream=await navigator.mediaDevices.getUserMedia({
-        audio: { echoCancellation:false, noiseSuppression:false, autoGainControl:false, sampleRate:44100 }
-      });
-      this.recorder=new MediaRecorder(stream, {
-        mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4'
-      }); 
-      this.chunks=[];
-      this.recorder.ondataavailable=e=>{ if(e.data.size>0) this.chunks.push(e.data); };
-      this.recorder.onstop=async()=>{
-        try{ 
-          const blob=new Blob(this.chunks,{type: this.recorder.mimeType}); 
-          const ab=await blob.arrayBuffer(); 
-          const buf=await this.ctx.decodeAudioData(ab); 
-          const p=this.pads[target]; 
-          p.buf=buf; p.name='Recorded Sample'; 
-          p.el.classList.add('has-sample'); 
-          p.el.querySelector('.pad-name').textContent=p.name; 
-          this.select(target); 
-          this.say('Recorded → Pad '+target); 
-        }catch(err){ console.error(err); this.say('Recording process failed'); }
-        stream.getTracks().forEach(t=>t.stop());
-        document.documentElement.classList.remove('rec-on');
-      };
-      this.recorder.start(); this.isRecording=true; this.say('Recording… tap Record again to stop');
-      document.documentElement.classList.add('rec-on');
+    const stream=await navigator.mediaDevices.getUserMedia({
+    audio: { echoCancellation:false, noiseSuppression:false, autoGainControl:false, sampleRate:44100 }
+    });
+    this.recorder=new MediaRecorder(stream, {
+    mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4'
+    }); 
+    this.chunks=[];
+    this.recorder.ondataavailable=e=>{ if(e.data.size>0) this.chunks.push(e.data); };
+    this.recorder.onstop=async()=>{
+    try{ 
+    const blob=new Blob(this.chunks,{type: this.recorder.mimeType}); 
+    const ab=await blob.arrayBuffer(); 
+    const buf=await this.ctx.decodeAudioData(ab); 
+    const p=this.pads[target]; 
+    p.buf=buf; p.name='Recorded Sample'; 
+    p.el.classList.add('has-sample'); 
+    p.el.querySelector('.pad-name').textContent=p.name; 
+    this.select(target); 
+    this.say('Recorded → Pad '+target); 
+    }catch(err){ console.error(err); this.say('Recording process failed'); }
+    stream.getTracks().forEach(t=>t.stop());
+    document.documentElement.classList.remove('rec-on');
+    };
+    this.recorder.start(); this.isRecording=true; this.say('Recording… tap Record again to stop');
+    document.documentElement.classList.add('rec-on');
     }catch(err){ console.error('Mic error',err); this.say('Mic permission denied/unavailable'); }
   }
   stopRec(){ if(this.recorder&&this.isRecording){ this.recorder.stop(); this.isRecording=false; } }
@@ -634,10 +704,10 @@ class Sequencer {
     this.ctx = sampler.ctx;
 
     this.isPlaying = false;
-    this.currentStep = 0;            // 0..7
-    this.tempo = 120;                // BPM
-    this.swing = 50;                 // 50..100
-    this.lookahead = 25;             // ms
+    this.currentStep = 0;    // 0..7
+    this.tempo = 120;    // BPM
+    this.swing = 50;    // 50..100
+    this.lookahead = 25;    // ms
     this.scheduleAheadTime = 0.12;   // seconds
     this.nextStepTime = 0;
 
@@ -648,13 +718,13 @@ class Sequencer {
     for(let t=1;t<=9;t++) this.pattern[t] = new Array(8).fill(false);
 
     this.ui = {
-      playPause: document.getElementById('playPauseBtn'),
-      tap: document.getElementById('tapTempoBtn'),
-      tempo: document.getElementById('tempoInput'),
-      swing: document.getElementById('swingSlider'),
-      swingVal: document.getElementById('swingValue'),
-      tracks: document.getElementById('sequencerTracks'),
-      status: document.getElementById('status')
+    playPause: document.getElementById('playPauseBtn'),
+    tap: document.getElementById('tapTempoBtn'),
+    tempo: document.getElementById('tempoInput'),
+    swing: document.getElementById('swingSlider'),
+    swingVal: document.getElementById('swingValue'),
+    tracks: document.getElementById('sequencerTracks'),
+    status: document.getElementById('status')
     };
 
     this.createTracks();
@@ -663,20 +733,20 @@ class Sequencer {
 
   createTracks(){
     for(let track=1; track<=9; track++){
-      const row = document.createElement('div');
-      row.className = 'track-row';
-      const label = document.createElement('div');
-      label.className = 'track-label';
-      label.textContent = `Pad ${track}`;
-      row.appendChild(label);
-      for(let step=0; step<8; step++){
-        const btn = document.createElement('div');
-        btn.className = 'step-button';
-        btn.dataset.track = track;
-        btn.dataset.step = step;
-        row.appendChild(btn);
-      }
-      this.ui.tracks.appendChild(row);
+    const row = document.createElement('div');
+    row.className = 'track-row';
+    const label = document.createElement('div');
+    label.className = 'track-label';
+    label.textContent = `P${track}`;
+    row.appendChild(label);
+    for(let step=0; step<8; step++){
+    const btn = document.createElement('div');
+    btn.className = 'step-button';
+    btn.dataset.track = track;
+    btn.dataset.step = step;
+    row.appendChild(btn);
+    }
+    this.ui.tracks.appendChild(row);
     }
   }
 
@@ -685,25 +755,25 @@ class Sequencer {
     this.ui.tap.addEventListener('click', ()=> this.tapTempo());
 
     this.ui.tempo.addEventListener('input', e=>{
-      const v = Math.max(60, Math.min(200, parseInt(e.target.value||120,10)));
-      this.tempo = v; this.ui.tempo.value = v;
-      this.say(`Tempo: ${v} BPM`);
+    const v = Math.max(60, Math.min(200, parseInt(e.target.value||120,10)));
+    this.tempo = v; this.ui.tempo.value = v;
+    this.say(`Tempo: ${v} BPM`);
     });
 
     this.ui.swing.addEventListener('input', e=>{
-      this.swing = parseInt(e.target.value,10);
-      this.ui.swingVal.textContent = `${this.swing}%`;
+    this.swing = parseInt(e.target.value,10);
+    this.ui.swingVal.textContent = `${this.swing}%`;
     });
 
     this.ui.tracks.addEventListener('click', (e)=>{
-      if(!e.target.classList.contains('step-button')) return;
-      const t = parseInt(e.target.dataset.track,10);
-      const s = parseInt(e.target.dataset.step,10);
-      this.pattern[t][s] = !this.pattern[t][s];
-      e.target.classList.toggle('active', this.pattern[t][s]);
-      if(this.pattern[t][s]) { // instant feedback
-        this.sampler.playAt(t, this.ctx.currentTime);
-      }
+    if(!e.target.classList.contains('step-button')) return;
+    const t = parseInt(e.target.dataset.track,10);
+    const s = parseInt(e.target.dataset.step,10);
+    this.pattern[t][s] = !this.pattern[t][s];
+    e.target.classList.toggle('active', this.pattern[t][s]);
+    if(this.pattern[t][s]) { // instant feedback
+    this.sampler.playAt(t, this.ctx.currentTime);
+    }
     });
   }
 
@@ -738,26 +808,26 @@ class Sequencer {
   getSwingOffset(stepIndex) {
     if (this.swing <= 50) return 0;
     if ((stepIndex % 2) === 1) {
-      const factor = (this.swing - 50) / 50; // 0..1
-      return this.getStepDuration() * 0.5 * factor;
+    const factor = (this.swing - 50) / 50; // 0..1
+    return this.getStepDuration() * 0.5 * factor;
     }
     return 0;
   }
 
   scheduler(){
     while (this.isPlaying && this.nextStepTime < this.ctx.currentTime + this.scheduleAheadTime) {
-      const step = this.currentStep;
+    const step = this.currentStep;
 
-      const stepTime = this.nextStepTime + this.getSwingOffset(step);
-      this.scheduleStep(step, stepTime);
+    const stepTime = this.nextStepTime + this.getSwingOffset(step);
+    this.scheduleStep(step, stepTime);
 
-      // prepare next base step time (without swing)
-      this.nextStepTime += this.getStepDuration();
-      this.currentStep = (this.currentStep + 1) % 8;
+    // prepare next base step time (without swing)
+    this.nextStepTime += this.getStepDuration();
+    this.currentStep = (this.currentStep + 1) % 8;
     }
 
     if(this.isPlaying) {
-      setTimeout(()=>this.scheduler(), this.lookahead);
+    setTimeout(()=>this.scheduler(), this.lookahead);
     }
   }
 
@@ -765,27 +835,27 @@ class Sequencer {
     // Visuals at the right time
     const ms = Math.max(0, (time - this.ctx.currentTime) * 1000);
     setTimeout(()=>{
-      if(!this.isPlaying) return;
-      this.updateVisuals(step);
+    if(!this.isPlaying) return;
+    this.updateVisuals(step);
     }, ms);
 
     // Trigger tracks marked ON at this step
     for(let t=1; t<=9; t++){
-      if(this.pattern[t][step]) {
-        this.sampler.playAt(t, time);
-      }
+    if(this.pattern[t][step]) {
+    this.sampler.playAt(t, time);
+    }
     }
   }
 
   updateVisuals(step){
     // clear previous
     document.querySelectorAll('.step-button').forEach(b=>{
-      b.classList.remove('current-beat','playing');
+    b.classList.remove('current-beat','playing');
     });
     // current beat
     document.querySelectorAll(`.step-button[data-step="${step}"]`).forEach(b=>{
-      b.classList.add('current-beat');
-      if (b.classList.contains('active')) b.classList.add('playing');
+    b.classList.add('current-beat');
+    if (b.classList.contains('active')) b.classList.add('playing');
     });
   }
 
@@ -795,23 +865,23 @@ class Sequencer {
     if(this.tapTimes.length > 6) this.tapTimes.shift();
 
     if(this.tapTimes.length >= 2) {
-      const intervals = [];
-      for(let i=1;i<this.tapTimes.length;i++){
-        intervals.push(this.tapTimes[i]-this.tapTimes[i-1]);
-      }
-      const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
-      const bpm = Math.round(60000/avg);
-      if(bpm>=60 && bpm<=200){
-        this.tempo = bpm;
-        this.ui.tempo.value = bpm;
-        this.say(`Tempo: ${bpm} BPM`);
-      }
+    const intervals = [];
+    for(let i=1;i<this.tapTimes.length;i++){
+    intervals.push(this.tapTimes[i]-this.tapTimes[i-1]);
+    }
+    const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
+    const bpm = Math.round(60000/avg);
+    if(bpm>=60 && bpm<=200){
+    this.tempo = bpm;
+    this.ui.tempo.value = bpm;
+    this.say(`Tempo: ${bpm} BPM`);
+    }
     }
 
     // clear taps after 2s inactivity
     clearTimeout(this._tapClearTO);
     this._tapClearTO = setTimeout(()=>{
-      if(this.tapTimes.length) this.tapTimes = [];
+    if(this.tapTimes.length) this.tapTimes = [];
     }, 2000);
   }
 
@@ -821,8 +891,6 @@ class Sequencer {
 document.addEventListener('DOMContentLoaded', ()=>{
   const sampler = new Sampler();
   const seq = new Sequencer(sampler);
-
-  // Back button wiring already in sampler.bind()
 
   // Optional: expose sequencer for debugging
   window.sequencer = seq;
